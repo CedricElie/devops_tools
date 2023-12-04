@@ -1,0 +1,55 @@
+---
+- name: "Install Jenkins on a RedHat/CentOS/Fedora Host"
+  become: True
+  hosts: "{{ nodes | default('tools') }}"  #Because I have a node called tools
+  tasks:
+    - name: "Put SELinux in permissive mode"
+      selinux:
+        policy: targeted
+        state: permissive
+    - name: "Getting the repo file"
+      get_url:
+        url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+        dest: /etc/yum.repos.d/jenkins.repo
+
+    - name: "Importing the repository key"
+      ansible.builtin.rpm_key:
+        state: present
+        key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+
+    - name: "Execute Yum Upgrade"
+      ansible.builtin.yum:
+        name: '*'
+        state: latest
+        exclude: kernel*
+
+    - name: "Install fontconfig and java-17-openjdk"
+      ansible.builtin.yum:
+        name: 
+          - fontconfig
+          - java-17-openjdk
+        state: present
+
+    - name: "Install Jenkins"
+      ansible.builtin.yum:
+        name:
+          - jenkins
+        state: present
+
+    - name: "Force Systemd to reread and reload configurations"
+      command: systemctl daemon-reload
+
+    - name: "Firewall commands (1/3)"
+      command: firewall-cmd --zone=public --add-port=8080/tcp --permanent
+
+    - name: "Firewall commands (2/3)"
+      command: firewall-cmd --zone=public --add-service=http --permanent
+
+    - name: "Firewall commands (3/3)"
+      command: firewall-cmd --reload
+
+    - name: "Start and enable jenkins"
+      service:
+        name: jenkins
+        state: restarted
+        enabled: yes
