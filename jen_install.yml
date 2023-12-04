@@ -3,10 +3,11 @@
   become: True
   hosts: "{{ nodes | default('tools') }}"  #Because I have a node called tools
   tasks:
-    - name: "Put SELinux in permissive mode"
+    - name: "Put SELinux in permissive mode" #Not a good practice
       selinux:
         policy: targeted
         state: permissive
+
     - name: "Getting the repo file"
       get_url:
         url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
@@ -39,6 +40,7 @@
     - name: "Force Systemd to reread and reload configurations"
       command: systemctl daemon-reload
 
+    #Need to find a way to handle these steps with firewalld module, rather than using commands
     - name: "Firewall commands (1/3)"
       command: firewall-cmd --zone=public --add-port=8080/tcp --permanent
 
