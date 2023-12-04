@@ -4,7 +4,7 @@ This is just a basic repo to automate some basic devops tools install on a new R
 ## Jenkins
 This was done using the steps presented on jenkins official documentation
 
-link https://www.jenkins.io/doc/book/installing/linux/#red-hat-centos
+> https://www.jenkins.io/doc/book/installing/linux/#red-hat-centos
 
 ```
 - name: "Install Jenkins on a RedHat/CentOS/Fedora Host"
