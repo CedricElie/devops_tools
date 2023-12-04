@@ -1,0 +1,10 @@
+---
+- name: "Install Jenkins on a RedHat/CentOS/Fedora Host"
+  become: True
+  hosts: "{{ nodes | default('tools') }}"  #Because I have a node called tools
+  tasks:
+    - name: "Put SELinux in permissive mode" #Not a good practice
+      selinux:
+        policy: targeted
+        state: permissive
+
